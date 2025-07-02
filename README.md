@@ -76,4 +76,181 @@ Your work will be automatically submitted when you push to your GitHub Classroom
 - [Express.js Documentation](https://expressjs.com/)
 - [React Documentation](https://react.dev/)
 - [Node.js Documentation](https://nodejs.org/en/docs/)
-- [Mongoose Documentation](https://mongoosejs.com/docs/) 
+- [Mongoose Documentation](https://mongoosejs.com/docs/)
+
+
+## How to navigate my project
+
+MERN Stack Blog Application
+A full-stack blog platform built with the MERN (MongoDB, Express.js, React.js, Node.js) stack. This application features user authentication, post management, and a RESTful API.
+
+Features
+User Authentication: Secure user registration and login using JSON Web Tokens (JWT).
+
+Post Management: Logged-in users can create new blog posts.
+
+RESTful API: A well-structured backend API for handling data.
+
+React Front-End: A dynamic and responsive user interface built with React.
+
+Tech Stack
+Frontend: React, React Router
+
+Backend: Node.js, Express.js
+
+Database: MongoDB with Mongoose
+
+Authentication: JSON Web Tokens (JWT)
+
+Getting Started
+Follow these instructions to get the project set up and running on your local machine.
+
+Prerequisites
+Make sure you have the following installed:
+
+Node.js (v18 or higher)
+
+npm or pnpm
+
+MongoDB (or a MongoDB Atlas account)
+
+Git
+
+Installation & Setup
+Clone the repository:
+
+Bash
+
+git clone <your-repo-url>
+cd <your-repo-folder>
+Backend Setup:
+
+Bash
+
+# Navigate to the server directory
+cd server
+
+# Install dependencies
+pnpm install
+
+# Create a .env file in the server/ directory
+# Then, add the following environment variables
+# (replace with your own values)
+touch .env
+Your server/.env file should look like this:
+
+Code snippet
+
+MONGODB_URI=mongodb://127.0.0.1:27017/mern-blog
+JWT_SECRET=your-super-secret-and-long-random-string
+JWT_EXPIRE=30d
+Bash
+
+# Start the backend server (runs on http://localhost:5000)
+pnpm run dev
+Frontend Setup:
+Open a new terminal window for this step.
+
+Bash
+
+# Navigate to the client directory from the root folder
+cd client
+
+# Install dependencies
+pnpm install
+
+# Start the React development server (runs on http://localhost:5173 or another port)
+pnpm run dev
+API Documentation
+The API is structured around REST principles. All endpoints are prefixed with /api.
+
+Base URL: http://localhost:5000/api
+
+Authentication
+POST /auth/register
+Description: Registers a new user.
+
+Access: Public
+
+Request Body:
+
+JSON
+
+{
+    "username": "testuser",
+    "email": "test@example.com",
+    "password": "password123"
+}
+Success Response (201): Returns a JWT token and user object.
+
+POST /auth/login
+Description: Logs in an existing user.
+
+Access: Public
+
+Request Body:
+
+JSON
+
+{
+    "email": "test@example.com",
+    "password": "password123"
+}
+Success Response (200): Returns a JWT token and user object.
+
+Categories
+Protected routes require an Authorization: Bearer <token> header.
+
+GET /categories
+Description: Retrieves a list of all categories.
+
+Access: Public
+
+Success Response (200): An array of category objects.
+
+POST /categories
+Description: Creates a new category.
+
+Access: Private (Requires authentication)
+
+Request Body:
+
+JSON
+
+{
+    "name": "Technology"
+}
+Success Response (201): The newly created category object.
+
+Posts
+Protected routes require an Authorization: Bearer <token> header.
+
+GET /posts
+Description: Retrieves a list of all posts.
+
+Access: Public
+
+Success Response (200): An array of post objects, populated with author and category details.
+
+GET /posts/:slug
+Description: Retrieves a single post by its slug.
+
+Access: Public
+
+Success Response (200): A single post object.
+
+POST /posts
+Description: Creates a new post. The author is automatically assigned from the authenticated user. The slug is automatically generated from the title.
+
+Access: Private (Requires authentication)
+
+Request Body:
+
+JSON
+
+{
+    "title": "My New Blog Post",
+    "content": "This is the content of the post.",
+    "category": "60d21b4667d0d8992e610c85"
+}
+Success Response (201): The newly created post object.

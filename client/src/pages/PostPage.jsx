@@ -1,75 +1,63 @@
-import React, { useState, useEffect, useContext } from 'react';
+// src/pages/PostPage.jsx
+
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { postService } from '../services/api'; // Correct import
-import { AuthContext } from '../context/AuthContext';
+import { postService } from '../services/api';
 
 const PostPage = () => {
-  const { slug } = useParams();
   const [post, setPost] = useState(null);
-  const [comment, setComment] = useState('');
-  const { isAuthenticated } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { slug } = useParams();
 
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        // Use the new service method
-        const response = await postService.getPost(slug); 
-        setPost(response.data);
-      } catch (error) {
-        console.error("Failed to fetch post:", error);
+        // CORRECTED: The service now returns the data directly
+        const fetchedPost = await postService.getPostBySlug(slug);
+        setPost(fetchedPost);
+      } catch (err) {
+        console.error('Failed to fetch post', err);
+        setError('Post not found.');
+      } finally {
+        setLoading(false);
       }
     };
     fetchPost();
   }, [slug]);
 
-  const handleCommentSubmit = async (e) => {
-    e.preventDefault();
-    if (!comment) return;
-    try {
-      // Use the new service method
-      const response = await postService.addComment(post._id, { content: comment });
-      setPost(prev => ({ ...prev, comments: response.data }));
-      setComment('');
-    } catch (error) {
-      console.error("Failed to post comment", error);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="text-center mt-16">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading post...</p>
+      </div>
+    );
+  }
 
-  if (!post) return <p>Loading post...</p>;
+  if (error || !post) return <p className="text-center mt-8 text-red-500 bg-red-100 p-4 rounded-lg">{error || 'Post not found.'}</p>;
 
   return (
-    <article>
-      <h1 className="text-4xl font-bold">{post.title}</h1>
-      <p className="text-gray-600">By {post.author.username} on {new Date(post.createdAt).toLocaleDateString()}</p>
-      <div className="prose mt-4" dangerouslySetInnerHTML={{ __html: post.content }} />
-
-      <hr className="my-8" />
-
-      <section>
-        <h3 className="text-2xl font-bold mb-4">Comments</h3>
-        {isAuthenticated ? (
-          <form onSubmit={handleCommentSubmit}>
-            <textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full border p-2 rounded"
-              rows="3"
-              placeholder="Write a comment..."
-            ></textarea>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded mt-2">Post Comment</button>
-          </form>
-        ) : <p>Please log in to comment.</p>}
-
-        <div className="mt-6">
-          {post.comments.map(c => (
-            <div key={c._id} className="border-b py-2">
-              <strong>{c.user?.username || 'User'}</strong>
-              <p>{c.content}</p>
-              <small>{new Date(c.createdAt).toLocaleString()}</small>
-            </div>
-          ))}
+    <article className="max-w-4xl mx-auto py-8 px-4">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden p-8 md:p-12">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+          {post.title}
+        </h1>
+        <div className="flex items-center text-gray-500 dark:text-gray-400 text-sm mb-8">
+          <span>By {post.author?.username || 'Unknown Author'}</span>
+          <span className="mx-2">•</span>
+          <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+          <span className="mx-2">•</span>
+          <span className="bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800">
+            {post.category?.name || 'Uncategorized'}
+          </span>
         </div>
-      </section>
+        
+        <div 
+          className="prose dark:prose-invert lg:prose-xl max-w-none"
+          dangerouslySetInnerHTML={{ __html: post.content }} 
+        />
+      </div>
     </article>
   );
 };

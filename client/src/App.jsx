@@ -5,7 +5,9 @@ import HomePage from './pages/HomePage';
 import PostPage from './pages/PostPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import Header from './components/Header'; // You'll create this
+import CreatePostPage from './pages/CreatePostPage'; // Import the new page
+import Header from './components/Header';
+import ProtectedRoute from './components/ProtectedRoute'; // Import the new component
 
 function App() {
   return (
@@ -18,6 +20,16 @@ function App() {
             <Route path="/posts/:slug" element={<PostPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            
+            {/* CORRECTED: Add the route for creating a post */}
+            <Route 
+              path="/create-post" 
+              element={
+                <ProtectedRoute>
+                  <CreatePostPage />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </main>
       </Router>
